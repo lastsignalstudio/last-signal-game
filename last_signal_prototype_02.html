@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#080b10">
+<title>LAST SIGNAL — Prototype 0.2</title>
+<style>
+:root{color-scheme:dark;--ui:#dbe5ee;--muted:#8b9aa8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;font-family:system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}
+#game{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%}
+#vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.68) 100%);z-index:2}
+#grain{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E")}
+#hud{position:fixed;inset:0;z-index:4;color:var(--ui);pointer-events:none}
+.top{position:absolute;top:env(safe-area-inset-top,12px);left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;text-shadow:0 2px 8px #000}
+.brand{font-size:11px;letter-spacing:.24em;font-weight:800;color:#c9d6e0}
+#objective{font-size:12px;color:#d6dce1;margin-top:7px;max-width:230px;line-height:1.4}
+#clock{font:600 13px ui-monospace,monospace;color:#d9e2e8;background:#080d13aa;border:1px solid #ffffff22;padding:7px 10px;border-radius:5px}
+#hint{position:absolute;left:50%;top:62%;transform:translate(-50%,-50%);font-size:12px;letter-spacing:.06em;color:#e5edf3;text-align:center;text-shadow:0 2px 8px #000;max-width:80%;opacity:0;transition:opacity .2s}
+#message{position:absolute;left:50%;bottom:23%;transform:translateX(-50%);width:min(86%,420px);text-align:center;color:#e7edf1;font-size:13px;line-height:1.5;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .25s}
+#controls{position:fixed;inset:0;z-index:5;pointer-events:none}
+#stick{position:absolute;left:22px;bottom:calc(24px + env(safe-area-inset-bottom));width:116px;height:116px;border-radius:50%;border:1px solid #d9e5ee55;background:#10182066;pointer-events:auto;touch-action:none}
+#nub{position:absolute;width:48px;height:48px;border-radius:50%;left:33px;top:33px;background:#c7d6e044;border:1px solid #d9e5ee88;box-shadow:0 2px 14px #0008}
+.actions{position:absolute;right:18px;bottom:calc(25px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:auto}
+.ctrl{width:65px;height:65px;border-radius:50%;border:1px solid #d9e5ee66;background:#101820aa;color:#edf4f8;font-size:10px;letter-spacing:.08em;font-weight:700;display:grid;place-items:center;touch-action:manipulation;box-shadow:0 4px 16px #0008}
+.ctrl:active{background:#dbe5ee33}
+#looktip{position:absolute;right:18px;bottom:calc(176px + env(safe-area-inset-bottom));font-size:10px;color:#c4d0d8aa;text-align:right;max-width:130px}
+#start,#end{position:fixed;inset:0;z-index:10;background:linear-gradient(180deg,#070b10eF,#070b10f7),radial-gradient(ellipse at center,#26313b 0%,#05070a 70%);display:flex;align-items:center;justify-content:center;padding:26px;text-align:center;color:#e7edf2}
+.panel{max-width:430px}
+.kicker{font-size:10px;letter-spacing:.35em;color:#91a2af;font-weight:800}
+h1{font-size:clamp(35px,10vw,58px);letter-spacing:.12em;line-height:1.02;margin:18px 0 8px;font-weight:900}
+.sub{font-size:12px;letter-spacing:.24em;color:#9aa9b5}
+.rule{margin:30px auto 22px;max-width:320px;font-size:14px;line-height:1.7;color:#cbd5dc}
+.rule strong{color:#fff}
+.startbtn{border:1px solid #dce7ee88;background:#dce7ee;color:#0a1016;padding:14px 26px;border-radius:3px;font-weight:900;letter-spacing:.12em;font-size:12px}
+.small{font-size:10px;color:#71808c;line-height:1.5;margin-top:18px}
+#end{display:none}
+#end h2{letter-spacing:.15em}
+#toast{position:fixed;z-index:8;top:28%;left:50%;transform:translate(-50%,-50%);padding:10px 16px;background:#080d13d9;border:1px solid #dbe5ee55;color:#edf4f8;font-size:12px;letter-spacing:.08em;opacity:0;transition:opacity .2s;pointer-events:none;text-align:center;max-width:85%}
+@media(min-width:700px){#stick{left:34px;bottom:34px}.actions{right:34px;bottom:34px}}
+</style>
+</head>
+<body>
+<div id="game"></div><div id="vignette"></div><div id="grain"></div>
+<div id="hud">
+ <div class="top"><div><div class="brand">LAST SIGNAL <span style="color:#71808c">/ PROTOTYPE 0.2</span></div><div id="objective">Nhiệm vụ: Đi đến cuối hành lang tầng 3. Kiểm tra cửa phòng và đừng nghe cuộc gọi thứ ba.</div></div><div id="clock">02:17 AM</div></div>
+ <div id="hint"> </div><div id="message"></div>
+</div>
+<div id="controls">
+ <div id="stick"><div id="nub"></div></div>
+ <div id="looktip">KÉO MÀN HÌNH<br>để nhìn xung quanh · Đứng sát cửa để mở</div>
+ <div class="actions">
+  <button class="ctrl" id="flash">ĐÈN PIN<br>ON</button>
+  <button class="ctrl" id="use">TƯƠNG TÁC</button>
+ </div>
+</div>
+<div id="toast"></div>
+<div id="start"><div class="panel">
+ <div class="kicker">A VIETNAMESE PSYCHOLOGICAL HORROR</div>
+ <h1>LAST<br>SIGNAL</h1><div class="sub">TÍN HIỆU CUỐI CÙNG</div>
+ <div class="rule">Ca trực bắt đầu lúc <strong>02:17 AM</strong>.<br>Đi đến cuối hành lang tầng 3. Kiểm tra cửa phòng và đừng nghe cuộc gọi thứ ba.<br><strong>Nếu điện thoại reo lần thứ ba, đừng trả lời.</strong></div>
+ <button class="startbtn" id="begin">BẮT ĐẦU CA TRỰC</button>
+ <div class="small">Prototype 0.2 · Có cửa phòng, cuộc gọi và âm thanh bước chân.<br>Quy tắc: tuyệt đối không nhận cuộc gọi thứ ba.</div>
+ </div></div>
+<div id="end"><div class="panel"><div class="kicker">SIGNAL LOST</div><h2>BẠN ĐÃ BỊ PHÁT HIỆN</h2><p id="endtext">Hành lang im lặng trở lại.</p><button class="startbtn" id="again">CHƠI LẠI</button></div></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script>
+const root=document.getElementById('game');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x090d12);scene.fog=new THREE.FogExp2(0x090d12,.055);
+const camera=new THREE.PerspectiveCamera(74,innerWidth/innerHeight,.08,70);
+camera.position.set(0,1.65,7.5);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;root.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0x8395a5,0x17110e,.48));
+const ambient=new THREE.AmbientLight(0x52606c,.18);scene.add(ambient);
+const flashlight=new THREE.SpotLight(0xdce9f4,42,19,Math.PI/7,.42,1.5);flashlight.position.copy(camera.position);flashlight.target.position.set(0,1.4,-4);scene.add(flashlight,flashlight.target);
+const fill=new THREE.PointLight(0x8da1b2,1.0,8);fill.position.set(0,2.65,-3);scene.add(fill);
+const mats={
+ wall:new THREE.MeshStandardMaterial({color:0x42464a,roughness:.96}),
+ floor:new THREE.MeshStandardMaterial({color:0x292d30,roughness:.95}),
+ ceiling:new THREE.MeshStandardMaterial({color:0x24292d,roughness:1}),
+ door:new THREE.MeshStandardMaterial({color:0x302b28,roughness:.88}),
+ trim:new THREE.MeshStandardMaterial({color:0x55534e,roughness:.8}),
+ metal:new THREE.MeshStandardMaterial({color:0x171c20,metalness:.65,roughness:.55}),
+ stain:new THREE.MeshStandardMaterial({color:0x171b1e,roughness:1}),
+};
+function box(w,h,d,mat,x,y,z,cast=false){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=cast;m.receiveShadow=true;scene.add(m);return m}
+box(5.6,.18,28,mats.floor,0,-.1,-5);
+box(5.6,.18,28,mats.ceiling,0,3.35,-5);
+box(.18,3.45,28,mats.wall,-2.8,1.62,-5,true);
+box(.18,3.45,28,mats.wall,2.8,1.62,-5,true);
+box(5.6,3.45,.18,mats.wall,0,1.62,-19,true);
+box(5.6,.12,28,mats.trim,0,.03,-5);
+box(.04,3.2,28,mats.trim,-2.69,1.6,-5);
+box(.04,3.2,28,mats.trim,2.69,1.6,-5);
+// doors and room numbers
+const doors=[];
+for(let z=4;z>-18;z-=4.2){
+ for(const side of [-1,1]){
+  const x=side*2.69;
+  const door=box(.10,2.25,1.55,mats.door,x,1.12,z,true);
+  const frame=box(.13,2.42,1.72,mats.trim,x-side*.025,1.18,z);
+  const knob=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),new THREE.MeshStandardMaterial({color:0x8b8069,metalness:.8,roughness:.35}));
+  knob.position.set(x-side*.08,1.02,z+(side===-1?.48:-.48));scene.add(knob);
+  doors.push({mesh:door,side,z,room:Math.round(300+Math.abs(z)*3+ (side===1?1:0)),opened:false,anim:0});
+ }
+}
+// ceiling fixtures
+const fixtures=[];
+for(let z=5;z>-18;z-=5.4){
+ box(.85,.08,.25,mats.metal,0,3.19,z);
+ const lamp=new THREE.Mesh(new THREE.BoxGeometry(.65,.025,.16),new THREE.MeshStandardMaterial({color:0xc4d0d2,emissive:0x647984,emissiveIntensity:1.2}));
+ lamp.position.set(0,3.13,z);scene.add(lamp);
+ const light=new THREE.PointLight(0x9bb0bb,1.8,7,2);light.position.set(0,2.98,z);scene.add(light);fixtures.push({light,lamp,base:1.8});
+}
+// pipe and wall details
+for(const side of [-1,1]){
+ const pipe=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,27,8),new THREE.MeshStandardMaterial({color:0x242a2d,metalness:.55,roughness:.7}));
+ pipe.rotation.z=Math.PI/2;pipe.scale.set(1,1,1);pipe.position.set(side*2.53,2.95,-5);scene.add(pipe);
+ for(let z=5;z>-18;z-=3.5)box(.012,.32,.75,mats.stain,side*2.695,1.8,z);
+}
+// end door
+const endDoor=box(2.1,2.65,.16,new THREE.MeshStandardMaterial({color:0x242a2b,roughness:.9}),0,1.28,-18.82,true);
+box(2.3,.1,.22,mats.trim,0,2.67,-18.7);
+const exitSign=new THREE.Mesh(new THREE.BoxGeometry(.8,.22,.05),new THREE.MeshStandardMaterial({color:0x183326,emissive:0x164a2b,emissiveIntensity:1.5}));exitSign.position.set(0,2.9,-18.55);scene.add(exitSign);
+// shadow entity at far end
+const entity=new THREE.Group();scene.add(entity);
+const black=new THREE.MeshStandardMaterial({color:0x030405,roughness:1});
+const body=new THREE.Mesh(new THREE.CapsuleGeometry(.31,.95,5,8),black);body.position.y=1.08;entity.add(body);
+const head=new THREE.Mesh(new THREE.SphereGeometry(.25,12,10),black);head.position.y=1.85;entity.add(head);
+const eyeMat=new THREE.MeshBasicMaterial({color:0x9c2020});
+for(const x of [-.09,.09]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.025,8,6),eyeMat);eye.position.set(x,1.88,.225);entity.add(eye)}
+entity.position.set(.65,0,-15.4);entity.visible=false;
+// debris
+for(let i=0;i<18;i++){const o=box(.15+Math.random()*.35,.025,.12+Math.random()*.25,mats.stain,(Math.random()-.5)*4.5,.015,-17+Math.random()*24);o.rotation.y=Math.random()*3}
+let yaw=0,pitch=0,started=false,dead=false,flashOn=true,moveX=0,moveY=0,joystick=false,lastX=0,lastY=0,lookPointer=null,elapsed=0,ringCount=0,interactStage=0,entityTriggered=false;
+const clockEl=document.getElementById('clock'),objective=document.getElementById('objective'),hint=document.getElementById('hint'),message=document.getElementById('message'),toast=document.getElementById('toast');
+function showToast(t){toast.textContent=t;toast.style.opacity=1;clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.style.opacity=0,1900)}
+function showMessage(t){message.textContent=t;message.style.opacity=1;setTimeout(()=>message.style.opacity=0,3200)}
+
+// Audio is created only after the player taps Start (iOS requires a user gesture).
+let audioCtx=null,stepTimer=0,ringActive=false,ringNumber=0,ringNextAt=0,ringEndAt=0,callAnswered=false;
+function initAudio(){
+ if(audioCtx)return;
+ try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}
+}
+function tone(freq=440,duration=.18,volume=.045,type='sine'){
+ if(!audioCtx)return;
+ const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+ osc.type=type;osc.frequency.value=freq;gain.gain.setValueAtTime(volume,audioCtx.currentTime);
+ gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);
+ osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+duration);
+}
+function footstep(){tone(68,.09,.055,'triangle');setTimeout(()=>tone(43,.08,.025,'sine'),45)}
+function phoneRing(){
+ if(!audioCtx)return;
+ tone(740,.24,.055,'sine');setTimeout(()=>tone(560,.24,.05,'sine'),270);
+ setTimeout(()=>tone(740,.24,.05,'sine'),570);
+}
+function startCall(n){
+ ringNumber=n;ringActive=true;callAnswered=false;ringEndAt=elapsed+7;
+ showMessage(n===3?'ĐIỆN THOẠI ĐANG REO LẦN THỨ BA. ĐỪNG TRẢ LỜI.':'Điện thoại bảo vệ đang reo... Nhấn TƯƠNG TÁC để nghe.');
+ phoneRing();showToast('CUỘC GỌI ĐẾN · LẦN '+n);
+}
+
+function die(){if(dead)return;dead=true;document.getElementById('endtext').textContent='Bạn đã nhìn thấy thứ không nên tồn tại ở tầng 3.';document.getElementById('end').style.display='flex'}
+function reset(){camera.position.set(0,1.65,7.5);yaw=0;pitch=0;elapsed=0;ringCount=0;interactStage=0;entityTriggered=false;dead=false;ringActive=false;ringNumber=0;callAnswered=false;stepTimer=0;doors.forEach(d=>{d.opened=false;d.anim=0;d.mesh.rotation.y=0});entity.visible=false;started=true;document.getElementById('end').style.display='none';objective.textContent='Nhiệm vụ: Đi đến cuối hành lang tầng 3.';showMessage('Đèn pin còn pin. Hãy kiểm tra hành lang.')}
+function setFlash(v){flashOn=v;flashlight.intensity=v?42:0;document.getElementById('flash').innerHTML='ĐÈN PIN<br>'+(v?'ON':'OFF')}
+document.getElementById('begin').onclick=()=>{initAudio();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();document.getElementById('start').style.display='none';reset()};
+document.getElementById('again').onclick=reset;
+document.getElementById('flash').onclick=()=>setFlash(!flashOn);
+document.getElementById('use').onclick=()=>{
+ if(!started||dead)return;
+ if(ringActive){
+  if(ringNumber===3){showToast('Bạn đã phá vỡ quy tắc...');die();return}
+  callAnswered=true;ringActive=false;
+  showMessage(ringNumber===1?'Đầu dây bên kia chỉ có tiếng rè... rồi một giọng nói thì thầm: “Đừng mở cửa phòng 307.”':'Một giọng nói khàn đặc: “Nó đang đứng sau lưng anh.”');
+  showToast('ĐÃ NHẬN CUỘC GỌI');return;
+ }
+ // Open the nearest room door when standing beside it.
+ let nearest=null,nearestD=999;
+ for(const d of doors){
+  const dx=Math.abs(camera.position.x-d.side*2.35),dz=Math.abs(camera.position.z-d.z);
+  const dist=Math.hypot(dx,dz);
+  if(dist<nearestD){nearestD=dist;nearest=d}
+ }
+ if(nearest && nearestD<1.65){
+  if(!nearest.opened){nearest.opened=true;nearest.anim=1.18;showToast('ĐÃ MỞ CỬA PHÒNG '+nearest.room);showMessage('Bên trong tối om. Có tiếng móng tay cào nhẹ trên tường.');tone(105,.32,.06,'sawtooth')}
+  else{showMessage('Căn phòng trống... nhưng cửa tự khép lại.');nearest.anim=0}
+  return;
+ }
+ if(camera.position.z < -13.4 && interactStage<2){interactStage=2;showMessage('Cánh cửa thoát hiểm hé mở. Phía sau nó có tiếng thở.');showToast('CỬA THOÁT HIỂM ĐÃ MỞ');return}
+ if(camera.position.z < -7 && interactStage===0){interactStage=1;objective.textContent='Nhiệm vụ: Đừng nhìn quá lâu vào cuối hành lang.';showMessage('Bạn nghe thấy tiếng thì thầm: “Anh Minh... mở cửa cho em.”');return}
+ showToast('Hãy đứng sát một cánh cửa để tương tác.');
+};
+// joystick
+const stick=document.getElementById('stick'),nub=document.getElementById('nub');
+stick.addEventListener('pointerdown',e=>{joystick=true;stick.setPointerCapture(e.pointerId);updateStick(e)});
+stick.addEventListener('pointermove',e=>{if(joystick)updateStick(e)});
+function updateStick(e){const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const max=40,len=Math.hypot(dx,dy);if(len>max){dx=dx/len*max;dy=dy/len*max}moveX=dx/max;moveY=dy/max;nub.style.transform=`translate(${dx}px,${dy}px)`}
+function releaseStick(){joystick=false;moveX=0;moveY=0;nub.style.transform='translate(0,0)'}
+stick.addEventListener('pointerup',releaseStick);stick.addEventListener('pointercancel',releaseStick);
+// drag anywhere except controls to look
+renderer.domElement.addEventListener('pointerdown',e=>{lookPointer=e.pointerId;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});
+renderer.domElement.addEventListener('pointermove',e=>{if(lookPointer!==e.pointerId)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;yaw-=dx*.0042;pitch=Math.max(-.75,Math.min(.75,pitch-dy*.0032))});
+renderer.domElement.addEventListener('pointerup',()=>lookPointer=null);renderer.domElement.addEventListener('pointercancel',()=>lookPointer=null);
+function update(dt){
+ if(!started||dead)return;
+ elapsed+=dt;
+ // Footsteps while moving.
+ if(Math.abs(moveX)+Math.abs(moveY)>.22){stepTimer-=dt;if(stepTimer<=0){footstep();stepTimer=.43}}else{stepTimer=0}
+ // Two calls may be answered; the third must be ignored.
+ if(!ringActive && ringNumber<3 && elapsed>=[0,19,39,58][ringNumber+1])startCall(ringNumber+1);
+ if(ringActive && elapsed>ringEndAt){ringActive=false;if(ringNumber===3){showMessage('Cuộc gọi tắt. Bạn đã giữ im lặng...');objective.textContent='Nhiệm vụ: Tiếp tục đến cửa thoát hiểm.'}else{showToast('CUỘC GỌI NHỠ');}}
+ // Door open/close animation.
+ doors.forEach(d=>{const target=d.opened?d.anim:0;d.mesh.rotation.y+=(target-d.mesh.rotation.y)*Math.min(1,dt*5)});
+ const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+ const right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+ const vel=forward.clone().multiplyScalar(-moveY).add(right.multiplyScalar(moveX));
+ if(vel.lengthSq()>0){vel.normalize().multiplyScalar(2.35*dt);camera.position.add(vel)}
+ camera.position.x=THREE.MathUtils.clamp(camera.position.x,-2.15,2.15);
+ camera.position.z=THREE.MathUtils.clamp(camera.position.z,-18.05,7.5);
+ camera.position.y=1.65;
+ camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;
+ flashlight.position.copy(camera.position);flashlight.position.y-=.08;
+ const dir=new THREE.Vector3(-Math.sin(yaw),Math.sin(pitch),-Math.cos(yaw));flashlight.target.position.copy(camera.position).add(dir.multiplyScalar(7));
+ fixtures.forEach((f,i)=>{const flick=Math.random()<(i===2?.035:.004)?Math.random()*.12:1;f.light.intensity=f.base*flick;f.lamp.material.emissiveIntensity=flick});
+ const mins=Math.floor(elapsed/60),secs=Math.floor(elapsed%60);clockEl.textContent=`02:${String(17+mins).padStart(2,'0')} AM`;
+ if(elapsed>25 && !entityTriggered){entityTriggered=true;entity.visible=true;showMessage('Có thứ gì đó đang đứng ở cuối hành lang.');}
+ if(entity.visible){entity.position.x=.65+Math.sin(elapsed*.7)*.13;entity.position.z=-15.4+Math.max(0,elapsed-28)*.08;entity.lookAt(camera.position.x,1.3,camera.position.z)}
+ const dist=camera.position.distanceTo(entity.position.clone().add(new THREE.Vector3(0,1,0)));
+ if(entity.visible && elapsed>48 && dist<3.2){die()}
+ if(camera.position.z < -13.4 && !dead){hint.textContent='NHẤN TƯƠNG TÁC ĐỂ KIỂM TRA CỬA';hint.style.opacity=1}else{hint.style.opacity=0}
+ if(elapsed>72 && !dead){showMessage('Ca trực vẫn chưa kết thúc. Hãy tìm cửa thoát hiểm.');elapsed=52}
+}
+let prev=performance.now();
+function loop(now){requestAnimationFrame(loop);const dt=Math.min((now-prev)/1000,.04);prev=now;update(dt);renderer.render(scene,camera)}
+requestAnimationFrame(loop);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight)});
+</script>
+</body></html>
