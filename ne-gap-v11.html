@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#10152b"><meta name="description" content="NÉ GẤP! — Đồng hành cùng Bé Tia, né chướng ngại vật, thu thập xu và đánh bại 3 Boss trong 3 thế giới."><title>NÉ GẤP! 1.1 — Mobile Polish</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#10152b;color:white;font-family:system-ui;touch-action:none}canvas{width:100vw;height:100dvh;display:block}#hud{position:fixed;inset:0;pointer-events:none;padding:18px 14px}.score{position:absolute;top:16px;left:50%;transform:translateX(-50%);text-align:center;font-weight:1000;font-size:52px;text-shadow:0 4px #0008}.score small{display:block;font-size:11px;letter-spacing:2px}.tools{position:absolute;right:12px;top:12px;pointer-events:auto}.tools button{background:#1b3155;color:white;border:1px solid #ffffff44;border-radius:12px;padding:10px}.brand{font-weight:1000;letter-spacing:2px;color:#bdefff}#panel{pointer-events:auto;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(90vw,380px);padding:23px 20px;border-radius:25px;text-align:center;background:linear-gradient(145deg,#203963,#10182f);border:1px solid #ffffff44;box-shadow:0 20px 60px #0009}h1{margin:0;color:#ffe36e;font-size:48px;letter-spacing:-3px}#desc{font-size:14px;line-height:1.5;color:#dceaff}.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.mode{padding:10px 3px;border-radius:12px;border:1px solid #ffffff44;background:#ffffff0c;color:white;font-weight:900;font-size:12px}.mode small{display:block;font-size:10px;font-weight:500;margin-top:4px}.mode.active{background:#ffe36e;color:#17213a;border-color:#ffe36e}#start{width:100%;padding:15px;border:0;border-radius:14px;background:linear-gradient(#fff09b,#ffc84d);font-size:17px;font-weight:1000;color:#17213a;box-shadow:0 4px #a66c24}.note{font-size:11px;color:#b9cce9;line-height:1.5;margin-top:13px}.skin-label{font-size:12px;color:#bddaff;font-weight:900;margin-top:12px}.skins{display:flex;gap:7px;margin:8px 0 12px}.world-label{font-size:12px;color:#bddaff;font-weight:900;margin-top:12px}.worlds{display:flex;gap:7px;margin:8px 0 12px}.world{flex:1;padding:9px 2px;border-radius:11px;border:1px solid #ffffff44;background:#ffffff0c;color:white;font-size:10px;font-weight:900}.world.active{background:#72eaff;color:#10213b;border-color:#72eaff}.missionhud{position:absolute;top:190px;left:50%;transform:translateX(-50%);padding:6px 10px;border-radius:20px;background:#13294ddd;border:1px solid #ffe36e88;font-size:10px;white-space:nowrap;color:#fff2b5}.skin{flex:1;padding:9px 3px;border-radius:11px;border:1px solid #ffffff44;background:#ffffff0c;color:white;font-size:11px;font-weight:800}.skin.active{border-color:#ffe36e;background:#ffe36e;color:#17213a}.powerhud{position:absolute;top:154px;left:50%;transform:translateX(-50%);display:flex;gap:7px;font-size:10px;white-space:nowrap}.powerhud span{padding:6px 9px;border-radius:20px;background:#11294ddd;border:1px solid #7eeaff66}.hidden{display:none!important}#hint{position:absolute;bottom:22px;width:100%;text-align:center;font-size:11px;letter-spacing:1px;color:#e2f4ffb0;left:0}#tutorial{position:absolute;top:90px;left:50%;transform:translateX(-50%);font-size:11px;background:#132e4ccc;border:1px solid #80eaff66;border-radius:30px;padding:7px 12px;white-space:nowrap;opacity:0}#bossHud{position:absolute;top:222px;left:50%;transform:translateX(-50%);width:min(68vw,280px);padding:7px 10px;border-radius:12px;background:#10182ddd;border:1px solid #ff7c9c88;text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;opacity:0;transition:opacity .2s}#bossTrack{height:7px;background:#ffffff25;border-radius:9px;margin-top:5px;overflow:hidden}#bossFill{height:100%;width:100%;background:linear-gradient(90deg,#ff557c,#ffc36b);border-radius:9px;transition:width .15s}#combo{position:absolute;top:118px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:1000;letter-spacing:2px;color:#ffe36e;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .15s}
+
+/* 1.1 mobile polish */
+button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:3px solid #9cf9ed;outline-offset:3px}
+.tools button{min-width:44px;min-height:44px;font-size:17px}
+#start{min-height:48px}
+@media(max-height:740px){
+ #panel{padding:16px 16px;width:min(92vw,360px);max-height:88dvh;overflow-y:auto}
+ h1{font-size:40px}
+ .note{margin-top:8px}
+ .skin-label,.world-label{margin-top:8px}
+ .skins,.worlds{margin:6px 0 8px}
+ .modes{margin:8px 0}
+ .score{font-size:42px}
+ .powerhud{top:132px}
+ .missionhud{top:166px}
+ #bossHud{top:198px}
+}
+@media(max-width:380px){
+ #hud{padding:12px 10px}
+ .brand{font-size:13px}
+ .score{font-size:38px;top:12px}
+ .powerhud{gap:4px;font-size:9px}
+ .powerhud span{padding:5px 6px}
+ .missionhud{font-size:9px;max-width:92vw;overflow:hidden}
+ .world,.skin{font-size:9px}
+ #panel{padding:15px 13px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
+</style></head><body><canvas id="c"></canvas><div id="hud"><div class="brand">NÉ GẤP!<br><small>ARCADE 1.1 • MOBILE POLISH</small></div><div class="score"><span id="score">0</span><small id="best">BEST 0</small><small id="walletHud">🪙 0 XU</small><small id="livesHud">❤️❤️❤️</small></div><div class="tools"><button id="sound" type="button" aria-label="Bật hoặc tắt âm thanh" title="Âm thanh">♫</button> <button id="pause" type="button" aria-label="Tạm dừng hoặc tiếp tục" title="Tạm dừng">Ⅱ</button></div><div id="tutorial">CHẠM 1 LẦN ĐỂ ĐỔI HƯỚNG</div><div id="combo">COMBO ×2</div><div class="powerhud"><span id="shieldHud">🛡️ KHIÊN: —</span><span id="magnetHud">🧲 NAM CHÂM: —</span><span id="boostHud">⚡ TĂNG TỐC: —</span></div><div class="missionhud" id="missionHud">🎯 NHIỆM VỤ: THU 5 XU · 0/5</div><div id="bossHud">👾 <span id="bossName">BOSS NĂNG LƯỢNG</span> <div id="bossTrack"><div id="bossFill"></div></div><span id="bossHpText">3/3</span></div><div id="panel"><h1 id="title">NÉ GẤP!</h1><div style="font-size:10px;letter-spacing:3px;color:#9cf9ed;font-weight:900">DODGE • FLIP • SURVIVE</div><p id="desc">Chạm màn hình để đổi trọng lực.<br>Né chướng ngại vật và thu thập xu!</p><b style="font-size:12px;color:#bddaff">CHỌN ĐỘ KHÓ</b><div class="modes"><button class="mode active" data-d="easy">DỄ<small>Người mới</small></button><button class="mode" data-d="normal">THƯỜNG<small>Cân bằng</small></button><button class="mode" data-d="hard">KHÓ<small>Phản xạ</small></button></div><div class="skin-label">CHỌN TRANG PHỤC BÉ TIA</div><div class="skins"><button class="skin active" data-skin="classic">⚡ CƠ BẢN</button><button class="skin" data-skin="mint">🌿 BẠC HÀ</button><button class="skin" data-skin="berry">🍓 DÂU</button></div><div class="world-label">CHỌN THẾ GIỚI</div><div class="worlds"><button class="world active" data-world="space">🌌 VŨ TRỤ</button><button class="world" data-world="ice">❄️ BĂNG</button><button class="world" data-world="neon">🌆 NEON</button></div><button id="start">CHƠI NGAY</button><div class="note">HƯỚNG DẪN: Chạm màn hình hoặc nhấn Space để đổi trọng lực. Chờ Bé Tia đổi hướng rồi mới chạm tiếp. Né chướng ngại vật, thu xu và dùng sức mạnh đúng lúc!</div></div><div id="hint">CHẠM MÀN HÌNH ĐỂ ĐẢO TRỌNG LỰC</div></div>
+<script>
+(()=>{const c=document.getElementById('c'),x=c.getContext('2d'),$=id=>document.getElementById(id);let W,H,D,mode='ready',diff='easy',score=0,best=+(localStorage.neGapBest06||0),speed=2.4,frame=0,p,obs=[],coins=[],bits=[],stars=[],powerups=[],muted=localStorage.neGapMuted11==='1',audio=null,flips=0,last=0,combo=0,comboClock=0,worldTime=0,shieldTime=0,magnetTime=0,boostTime=0,skin=localStorage.neGapSkin05||'classic',world=localStorage.neGapWorld06||'space',worldChangeAt=-1000,runCoins=0,wallet=+(localStorage.neGapWallet06||0),missionDone=false,boss=null,bossShots=[],bolts=[],bossDefeated=false,bossLevel=0,nextBossAt=15,lives=5;
+const cfg={easy:{v:2.4,gap:.32,spawn:112,grav:.22,flip:4.2},normal:{v:3.2,gap:.27,spawn:96,grav:.29,flip:4.8},hard:{v:4.1,gap:.23,spawn:82,grav:.36,flip:5.2}};
+$('best').textContent='BEST '+best;$('walletHud').textContent='🪙 '+wallet+' XU';updateMissionHud();
+function size(){D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;c.width=W*D;c.height=H*D;x.setTransform(D,0,0,D,0,0);stars=Array.from({length:54},()=>({x:Math.random()*W,y:Math.random()*H*.72,z:.25+Math.random()*.9,r:.5+Math.random()*1.5}))}addEventListener('resize',size);size();
+function beep(f=500,d=.1){if(muted)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.frequency.value=f;g.gain.value=.035;o.connect(g);g.connect(audio.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.stop(audio.currentTime+d)}catch(e){}}
+$('sound').textContent=muted?'♫̸':'♫';$('sound').setAttribute('aria-pressed',String(!muted));$('sound').onclick=()=>{muted=!muted;localStorage.neGapMuted11=muted?'1':'0';$('sound').textContent=muted?'♫̸':'♫';$('sound').setAttribute('aria-pressed',String(!muted));if(!muted)beep()};
+document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{diff=b.dataset.d;document.querySelectorAll('.mode').forEach(a=>a.classList.toggle('active',a===b))});
+document.querySelectorAll('.skin').forEach(b=>{if(b.dataset.skin===skin)b.classList.add('active');else b.classList.remove('active');b.onclick=()=>{skin=b.dataset.skin;localStorage.neGapSkin05=skin;document.querySelectorAll('.skin').forEach(a=>a.classList.toggle('active',a===b));beep(720,.07)}});
+document.querySelectorAll('.world').forEach(b=>{b.classList.toggle('active',b.dataset.world===world);b.onclick=()=>{world=b.dataset.world;worldChangeAt=worldTime;localStorage.neGapWorld06=world;document.querySelectorAll('.world').forEach(a=>a.classList.toggle('active',a===b));beep(820,.07)}});
+function panel(title,desc,btn,fn){$('title').textContent=title;$('desc').innerHTML=desc;$('start').textContent=btn;$('start').onclick=fn;$('panel').classList.remove('hidden')}
+function reset(){score=0;frame=0;flips=0;combo=0;comboClock=0;obs=[];coins=[];bits=[];powerups=[];boss=null;bossShots=[];bolts=[];bossDefeated=false;bossLevel=0;nextBossAt=15;lives=5;updateLivesHud();$('bossHud').style.opacity=0;runCoins=0;missionDone=false;updateMissionHud();shieldTime=0;magnetTime=0;boostTime=0;updatePowerHud();speed=cfg[diff].v;p={x:W*.24,y:H*.72,r:17,side:1,vy:0,rot:0,trail:[]};$('score').textContent=0;$('combo').style.opacity=0}
+function startBoss(){
+ if(boss||bossLevel>=3||score<nextBossAt)return;
+ const names=['BOSS NĂNG LƯỢNG','BOSS BĂNG GIÁ','BOSS NEON'];
+ const types=['energy','ice','neon'];
+ const hp=diff==='easy'?(bossLevel===2?3:2):(bossLevel===2?4:3+bossLevel);
+ boss={x:W+80,y:H*.5,hp,maxHp:hp,phase:0,shotClock:0,entry:true,type:types[bossLevel]};
+ $('bossName').textContent=names[bossLevel];
+ $('bossHud').style.opacity=1;
+ $('bossHpText').textContent=hp+'/'+hp;$('bossFill').style.width='100%';
+ $('tutorial').textContent='BOSS '+(bossLevel+1)+'/3 XUẤT HIỆN! CHẠM ĐỂ BẮN';
+ $('tutorial').style.opacity=1;beep(220-bossLevel*25,.28);
+}
+function updateBossHud(){
+ if(!boss)return;
+ $('bossHpText').textContent=boss.hp+'/'+boss.maxHp;
+ $('bossFill').style.width=(boss.hp/boss.maxHp*100)+'%';
+}
+function damageBoss(){
+ if(!boss)return;
+ boss.hp--;beep(880,.12);
+ for(let k=0;k<30;k++)bits.push({x:boss.x,y:boss.y,vx:(Math.random()-.5)*10,vy:(Math.random()-.5)*10,l:32,color:['#ffe36e','#7eeaff','#ff8bd8','#ffffff'][k%4]});
+ updateBossHud();
+ if(boss.hp<=0){
+  const defeatedName=$('bossName').textContent;
+  boss=null;bossLevel++;nextBossAt=[15,40,70,Infinity][bossLevel];$('bossHud').style.opacity=0;
+  score+=10;$('score').textContent=score;wallet+=15;localStorage.neGapWallet06=wallet;
+  $('walletHud').textContent='🪙 '+wallet+' XU';
+  if(bossLevel>=3){
+   bossDefeated=true;
+   panel('VÔ ĐỊCH!','Bé Tia đã đánh bại cả 3 Boss!<br>+10 điểm · +15 xu.<br><b>ĐIỂM CUỐI: '+score+' · TỔNG XU: '+wallet+'</b>','CHƠI LẠI',start);
+  }else{
+   panel('HẠ GỤC '+defeatedName+'!','+10 điểm · +15 xu.<br>Boss tiếp theo sẽ mạnh hơn!','CHUẨN BỊ',()=>{$('panel').classList.add('hidden');mode='play'});
+  }
+  mode='pause';beep(1320,.35);
+ }
+}
+function updateLivesHud(){
+ $('livesHud').textContent='❤️'.repeat(Math.max(0,lives))+'🖤'.repeat(Math.max(0,5-lives));
+}
+function updateMissionHud(){
+ $('missionHud').textContent=missionDone?'🏆 NHIỆM VỤ HOÀN THÀNH · +10 XU':'🎯 NHIỆM VỤ: THU 5 XU · '+Math.min(runCoins,5)+'/5';
+}
+function updatePowerHud(){
+ $('shieldHud').textContent='🛡️ KHIÊN: '+(shieldTime>0?Math.ceil(shieldTime/60)+'s':'—');
+ $('magnetHud').textContent='🧲 NAM CHÂM: '+(magnetTime>0?Math.ceil(magnetTime/60)+'s':'—');
+ $('boostHud').textContent='⚡ TĂNG TỐC: '+(boostTime>0?Math.ceil(boostTime/60)+'s':'—');
+}
+function start(){beep(620);reset();mode='play';$('panel').classList.add('hidden');$('tutorial').style.opacity=1}
+$('start').onclick=start;
+function flip(){if(mode!=='play')return;p.side*=-1;p.vy=p.side*cfg[diff].flip;flips++;beep(440+flips%3*120);if(boss)bolts.push({x:p.x+18,y:p.y,vx:8,life:90});for(let i=0;i<11;i++)bits.push({x:p.x,y:p.y,vx:(Math.random()-.5)*5,vy:(Math.random()-.5)*5,l:24}) ;if(flips>=3)$('tutorial').style.opacity=0}
+c.addEventListener('pointerdown',e=>{e.preventDefault();flip()});
+addEventListener('keydown',e=>{
+ if(e.code==='Space'||e.code==='ArrowUp'){
+  if(mode==='play'){e.preventDefault();flip()}
+ }
+ if(e.code==='Escape'||e.code==='KeyP'){
+  if(mode==='play')$('pause').click();
+  else if(mode==='pause')$('pause').click();
+ }
+});
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden&&mode==='play'){
+  mode='pause';
+  panel('TẠM DỪNG','Trò chơi đã tự tạm dừng khi bạn chuyển ứng dụng.','TIẾP TỤC',()=>{mode='play';$('panel').classList.add('hidden')});
+ }
+});
+$('pause').onclick=()=>{if(mode==='play'){mode='pause';panel('TẠM DỪNG','Bạn đang có <b>'+score+'</b> điểm.','TIẾP TỤC',()=>{mode='play';$('panel').classList.add('hidden')})}else if(mode==='pause'){$('panel').classList.add('hidden');mode='play'}};
+function spawn(){let a=cfg[diff],gap=Math.max(138,H*a.gap),mid=H*.5+(Math.random()-.5)*H*.16;obs.push({x:W+30,w:32,top:mid-gap/2,bottom:mid+gap/2,passed:false});if(Math.random()<.8)coins.push({x:W+65,y:mid+(Math.random()-.5)*gap*.25,t:false,spin:0});
+ if(Math.random()<.28){let types=['shield','magnet','boost'];powerups.push({x:W+100,y:mid+(Math.random()-.5)*gap*.22,type:types[Math.floor(Math.random()*types.length)],taken:false,spin:0})}
+}
+function hitRect(cx,cy,r,rx,ry,rw,rh){let xx=Math.max(rx,Math.min(cx,rx+rw)),yy=Math.max(ry,Math.min(cy,ry+rh));return (cx-xx)**2+(cy-yy)**2<r*r}
+function end(){
+ if(lives>1){
+  lives--;updateLivesHud();beep(260,.18);
+  p.y=H*.5;p.vy=0;p.side=1;p.rot=0;
+  obs=obs.filter(o=>o.x>p.x+85);bossShots=[];
+  shieldTime=100;updatePowerHud();
+  $('tutorial').textContent='MẤT 1 MẠNG! CÒN '+lives+' MẠNG';
+  $('tutorial').style.opacity=1;
+  mode='play';return;
+ }
+ lives=0;updateLivesHud();mode='over';beep(120,.2);
+ if(score>best){best=score;localStorage.neGapBest06=best}
+ $('best').textContent='BEST '+best;$('walletHud').textContent='🪙 '+wallet+' XU';updateMissionHud();
+ panel('GAME OVER','Bạn đạt <b>'+score+'</b> điểm, nhặt <b>'+runCoins+'</b> xu và hạ <b>'+bossLevel+'</b>/3 Boss.<br>'+(missionDone?'🏆 Hoàn thành nhiệm vụ +10 xu!':'Cố thêm một lần nữa nhé!'),'CHƠI LẠI',start)
+}
+function round(a,b,w,h,r){x.beginPath();x.roundRect(a,b,w,Math.max(0,h),r);x.fill()}
+function draw(t){worldTime=t||0;let pal=world==='ice'?{top:'#102b4a',mid:'#24618a',bottom:'#071725',gate:'#83eaff',glow:'#7eeaff'}:world==='neon'?{top:'#260f42',mid:'#4c246d',bottom:'#100a25',gate:'#ff78dc',glow:'#ff63d8'}:{top:'#102044',mid:'#18365e',bottom:'#070d20',gate:'#39d6c0',glow:'#58f3d0'};
+let g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,pal.top);g.addColorStop(.48,pal.mid);g.addColorStop(1,pal.bottom);x.fillStyle=g;x.fillRect(0,0,W,H);for(let s of stars){let sx=(s.x-worldTime*.012*s.z+W*2)%(W+4);x.globalAlpha=.25+s.z*.45;x.fillStyle='#d9f7ff';x.beginPath();x.arc(sx,s.y,s.r,0,Math.PI*2);x.fill()}x.globalAlpha=1;
+ // Background art 0.9.1: layered cosmic world, planet, aurora and distant city.
+ let night=world==='neon';
+ let ice=world==='ice';
+ // soft aurora ribbons
+ x.save();x.globalAlpha=.16;
+ for(let a=0;a<3;a++){
+   x.beginPath();
+   let yy=H*(.18+a*.075);
+   x.moveTo(0,yy);
+   x.bezierCurveTo(W*.28,yy-H*.11,W*.55,yy+H*.12,W,yy-H*.035);
+   x.lineTo(W,yy+H*.055);
+   x.bezierCurveTo(W*.58,yy+H*.18,W*.3,yy-H*.015,0,yy+H*.08);
+   x.closePath();
+   x.fillStyle=ice?'#8cecff':night?'#f06cff':'#37e8d0';x.fill();
+ }
+ x.restore();
+ // large glowing planet in the upper-left background
+ let px=W*.13,py=H*.25,pr=Math.min(W,H)*.105;
+ let pg=x.createRadialGradient(px-pr*.35,py-pr*.4,pr*.08,px,py,pr);
+ pg.addColorStop(0,ice?'#e6fdff':night?'#f6c4ff':'#b6f9ff');
+ pg.addColorStop(.55,ice?'#4b9fc8':night?'#9146b7':'#315d9a');
+ pg.addColorStop(1,'#10142f');
+ x.save();x.globalAlpha=.82;x.fillStyle=pg;x.shadowColor=pal.glow;x.shadowBlur=25;
+ x.beginPath();x.arc(px,py,pr,0,Math.PI*2);x.fill();x.shadowBlur=0;
+ x.strokeStyle=ice?'#a7f2ff88':night?'#f1a0ff88':'#8cefe088';x.lineWidth=3;
+ x.beginPath();x.ellipse(px,py+pr*.12,pr*1.45,pr*.32,-.22,Math.PI,Math.PI*2);x.stroke();x.restore();
+ // occasional meteor streaks
+ for(let m=0;m<3;m++){
+   let mx=((worldTime*(.035+m*.012)+m*W*.43)%(W+100))-40;
+   let my=H*(.08+m*.105);
+   x.strokeStyle=ice?'#baf7ff88':night?'#ffa8ff99':'#8ffff099';x.lineWidth=2;
+   x.beginPath();x.moveTo(mx,my);x.lineTo(mx-28,my+13);x.stroke();
+ }
+ let transitionAge=worldTime-worldChangeAt;
+if(transitionAge>=0&&transitionAge<700){
+ let alpha=(1-transitionAge/700)*.22;
+ x.save();x.globalAlpha=alpha;x.fillStyle=world==='ice'?'#a9f3ff':world==='neon'?'#ff9cff':'#8ffff0';
+ x.fillRect(0,0,W,H);x.restore();
+}
+let hz=H*.54;x.fillStyle='#263d68';x.beginPath();x.moveTo(0,hz);x.lineTo(W,hz);x.lineTo(W,H);x.lineTo(0,H);x.fill();x.strokeStyle='#6b91bf55';for(let i=0;i<10;i++){let y=hz+(H-hz)*i*i/100;x.beginPath();x.moveTo(0,y);x.lineTo(W,y);x.stroke()}for(let i=-5;i<=5;i++){x.beginPath();x.moveTo(W/2+i*9,hz);x.lineTo(W/2+i*W*.22,H);x.stroke()}x.fillStyle=pal.glow;x.shadowColor=pal.glow;x.shadowBlur=16;x.fillRect(0,hz,W,2);x.shadowBlur=0;
+for(let o of obs){let gr=x.createLinearGradient(o.x,0,o.x+o.w,0);gr.addColorStop(0,world==='ice'?'#2876a8':world==='neon'?'#963bb5':'#126d91');gr.addColorStop(.28,pal.gate);gr.addColorStop(.62,world==='ice'?'#e1fbff':world==='neon'?'#ffc3f0':'#b0ffe5');gr.addColorStop(1,world==='ice'?'#286b9b':world==='neon'?'#6b2c9a':'#145b91');x.fillStyle=gr;x.shadowColor=pal.glow;x.shadowBlur=17;round(o.x,0,o.w,o.top,8);round(o.x,o.bottom,o.w,H-o.bottom,8);x.shadowBlur=0;x.fillStyle=world==='ice'?'#e2fbff':world==='neon'?'#ffd5f5':'#d6fff2';round(o.x-4,o.top-9,o.w+8,9,4);round(o.x-4,o.bottom,o.w+8,9,4);x.fillStyle='#0b456b';x.fillRect(o.x+5,0,3,o.top-12);x.fillRect(o.x+5,o.bottom+12,3,H-o.bottom-12)}
+for(let q of coins)if(!q.t){let pulse=1+Math.sin(worldTime*.008+q.spin)*.13;x.save();x.translate(q.x,q.y);x.scale(pulse,1);x.fillStyle='#ffdf65';x.shadowColor='#ffbd35';x.shadowBlur=19;x.beginPath();x.arc(0,0,10,0,Math.PI*2);x.fill();x.shadowBlur=0;x.strokeStyle='#fff4b0';x.lineWidth=2;x.stroke();x.fillStyle='#94601b';x.font='1000 12px sans-serif';x.textAlign='center';x.fillText('★',0,4);x.restore()}
+
+for(let q of powerups)if(!q.taken){
+ x.save();x.translate(q.x,q.y);q.spin+=.04;
+ let col=q.type==='shield'?'#6beaff':q.type==='magnet'?'#ff75c8':'#ffe36e';
+ x.rotate(Math.sin(worldTime*.004+q.spin)*.12);x.fillStyle=col;x.shadowColor=col;x.shadowBlur=18;
+ x.beginPath();x.arc(0,0,12,0,Math.PI*2);x.fill();x.shadowBlur=0;
+ x.fillStyle='#14213b';x.font='bold 13px sans-serif';x.textAlign='center';x.textBaseline='middle';
+ x.fillText(q.type==='shield'?'S':q.type==='magnet'?'M':'⚡',0,1);x.restore()
+}
+if(boss){
+ x.save();x.translate(boss.x,boss.y);let pulse=1+Math.sin(worldTime*.01)*.06;
+ x.scale(pulse,pulse);
+ let bc=boss.type==='ice'?'#75eaff':boss.type==='neon'?'#c36bff':'#ff8ba0';let aura=x.createRadialGradient(0,0,8,0,0,58);aura.addColorStop(0,bc+'55');aura.addColorStop(1,bc+'00');x.fillStyle=aura;x.beginPath();x.arc(0,0,58,0,Math.PI*2);x.fill();
+ x.fillStyle=boss.type==='ice'?'#1d6485':boss.type==='neon'?'#54247c':'#6d245f';x.strokeStyle=bc;x.lineWidth=3;x.shadowColor=bc;x.shadowBlur=20;
+ x.beginPath();x.arc(0,0,31,0,Math.PI*2);x.fill();x.stroke();x.shadowBlur=0;
+ x.fillStyle=boss.type==='ice'?'#baf7ff':boss.type==='neon'?'#e8b5ff':'#ffb2d0';x.beginPath();x.moveTo(-20,-23);x.lineTo(-31,-43);x.lineTo(-5,-31);x.moveTo(20,-23);x.lineTo(31,-43);x.lineTo(5,-31);x.fill();
+ x.fillStyle='#fff';x.beginPath();x.ellipse(-11,-5,7,9,0,0,Math.PI*2);x.ellipse(11,-5,7,9,0,0,Math.PI*2);x.fill();
+ x.fillStyle='#4b173f';x.beginPath();x.arc(-9,-4,3,0,Math.PI*2);x.arc(13,-4,3,0,Math.PI*2);x.fill();
+ x.strokeStyle='#ffd3e4';x.lineWidth=3;x.beginPath();x.arc(0,10,9,.15,Math.PI-.15);x.stroke();
+ x.restore();
+}
+for(let s of bossShots){x.fillStyle=world==='ice'?'#8ceaff':world==='neon'?'#e38cff':'#ff729d';x.shadowColor=world==='ice'?'#54dfff':world==='neon'?'#c45cff':'#ff4f88';x.shadowBlur=15;x.beginPath();x.arc(s.x,s.y,7,0,Math.PI*2);x.fill();x.shadowBlur=0}
+for(let b of bolts){x.fillStyle='#fff18b';x.shadowColor='#ffe36e';x.shadowBlur=16;x.beginPath();x.arc(b.x,b.y,6,0,Math.PI*2);x.fill();x.shadowBlur=0}
+for(let b of bits){x.globalAlpha=b.l/32;x.fillStyle=b.color||'#ffe36e';x.fillRect(b.x,b.y,4,4)}x.globalAlpha=1;
+if(p){drawBeTia(worldTime)}}
+function drawBeTia(t){
+ x.save();x.translate(p.x,p.y+Math.sin(t*.009)*1.8);x.rotate(p.rot+Math.sin(t*.006)*.025);
+ // soft energy aura and flight trail
+ let aura=x.createRadialGradient(0,0,5,0,0,38);aura.addColorStop(0,p.side<0?'#71f5ff55':'#ffe36e55');aura.addColorStop(1,'#72dfff00');x.fillStyle=aura;x.beginPath();x.arc(0,0,38,0,Math.PI*2);x.fill();
+ x.globalAlpha=.7;x.strokeStyle=p.side<0?'#70f5ff':'#ffe36e';x.lineWidth=2;x.beginPath();x.ellipse(0,0,27,24+Math.sin(t*.012)*2,0,0,Math.PI*2);x.stroke();x.globalAlpha=1;
+ // backpack
+ x.fillStyle='#174b83';x.strokeStyle='#75eaff';x.lineWidth=2;round(-23,-5,12,22,5);x.fillStyle='#51eaff';x.shadowColor='#51eaff';x.shadowBlur=9;x.fillRect(-20,0,5,11);x.shadowBlur=0;
+ // little suit body
+ let suit=x.createLinearGradient(-12,4,12,25);
+ let suitMid=skin==='mint'?'#b9f4dc':skin==='berry'?'#ffd0e2':'#d8efff';
+ let suitEnd=skin==='mint'?'#258e82':skin==='berry'?'#b94d87':'#397bc4';
+ suit.addColorStop(0,'#ffffff');suit.addColorStop(.55,suitMid);suit.addColorStop(1,suitEnd);x.fillStyle=suit;x.strokeStyle='#3b8ed0';x.lineWidth=1.5;x.beginPath();x.ellipse(0,13,13,14,0,0,Math.PI*2);x.fill();x.stroke();
+ // arms and boots
+ x.fillStyle='#eaf7ff';x.strokeStyle='#4289c9';x.lineWidth=2;x.beginPath();x.ellipse(-12,11,6,9,-.5,0,Math.PI*2);x.fill();x.stroke();x.beginPath();x.ellipse(12,11,6,9,.5,0,Math.PI*2);x.fill();x.stroke();
+ x.fillStyle='#173d72';round(-10,22,9,7,3);round(3,22,9,7,3);x.fillStyle='#ffb34b';x.fillRect(-9,26,8,2);x.fillRect(4,26,8,2);
+ // large round helmet/head
+ let hg=x.createRadialGradient(-8,-17,2,0,-8,25);hg.addColorStop(0,'#ffffff');hg.addColorStop(.72,'#f2f7ff');hg.addColorStop(1,'#a9c9ed');x.fillStyle=hg;x.strokeStyle='#3d79b6';x.lineWidth=2.2;x.shadowColor='#7bdfff';x.shadowBlur=11;x.beginPath();x.arc(0,-9,21,0,Math.PI*2);x.fill();x.stroke();x.shadowBlur=0;
+ // blue visor cap
+ x.fillStyle='#1461a8';x.beginPath();x.ellipse(0,-23,19,8,-.08,Math.PI,Math.PI*2);x.fill();x.fillStyle='#42d9ff';x.beginPath();x.ellipse(1,-25,13,4,-.08,Math.PI,Math.PI*2);x.fill();
+ // side headphones
+ x.fillStyle='#ffb43d';x.strokeStyle='#174d86';x.lineWidth=2;x.beginPath();x.arc(-20,-10,7,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#35d9ff';x.beginPath();x.arc(-20,-10,4,0,Math.PI*2);x.fill();x.fillStyle='#ffdc65';x.font='bold 8px sans-serif';x.textAlign='center';x.fillText('ϟ',-20,-7);
+ // face, cheeks, eyes and happy smile
+ x.fillStyle='#26334b';x.beginPath();x.ellipse(-7,-10,3.5,5,0,0,Math.PI*2);x.ellipse(7,-10,3.5,5,0,0,Math.PI*2);x.fill();x.fillStyle='white';x.beginPath();x.arc(-8,-12,1.3,0,Math.PI*2);x.arc(6,-12,1.3,0,Math.PI*2);x.fill();x.fillStyle='#ff9ca4';x.beginPath();x.ellipse(-13,-3,4,2.4,0,0,Math.PI*2);x.ellipse(13,-3,4,2.4,0,0,Math.PI*2);x.fill();x.strokeStyle='#b84e62';x.lineWidth=1.8;x.beginPath();x.arc(0,-2,4,0.15,Math.PI-.15);x.stroke();
+ // lightning badge on chest
+ x.fillStyle='#ffcf4f';x.strokeStyle='#d77d26';x.lineWidth=1;x.beginPath();x.roundRect(-5,8,10,10,3);x.fill();x.stroke();x.fillStyle='#fff';x.font='bold 9px sans-serif';x.fillText('ϟ',0,16);
+ x.restore();
+}
+function update(dt){let a=cfg[diff];frame+=dt;shieldTime=Math.max(0,shieldTime-dt);magnetTime=Math.max(0,magnetTime-dt);boostTime=Math.max(0,boostTime-dt);updatePowerHud();comboClock=Math.max(0,comboClock-dt);if(comboClock===0){combo=0;$('combo').style.opacity=0}speed=(diff==='easy'?a.v:Math.min(a.v*1.65,a.v+score*.016))*(boostTime>0?1.2:1);
+if(score>=nextBossAt&&bossLevel<3&&!boss)startBoss();
+if(boss){
+ boss.phase+=.035*dt;
+ if(boss.x>W*.78)boss.x-=2.4*dt;
+ boss.y=H*.5+Math.sin(boss.phase)*H*.19;
+ boss.shotClock+=dt;
+ if(boss.shotClock>(diff==='easy'?145:(bossLevel===2?100:82-bossLevel*12))){boss.shotClock=0;let dx=p.x-boss.x,dy=p.y-boss.y,len=Math.max(1,Math.hypot(dx,dy));let shotSpeed=diff==='easy'?2.7:(bossLevel===2?3.7:4.2+bossLevel*.65);bossShots.push({x:boss.x-25,y:boss.y,vx:dx/len*shotSpeed,vy:dy/len*shotSpeed})}
+}
+if(frame>a.spawn+(diff==='easy'?28:0)-(speed-a.v)*3){spawn();frame=0}p.vy+=a.grav*p.side*dt;p.y+=p.vy*dt;p.rot+=(Math.max(-.35,Math.min(.35,p.vy*.045))-p.rot)*.15*dt;if(p.y-p.r<6||p.y+p.r>H-6){end();return}
+for(let o of obs){o.x-=speed*dt;if(!o.passed&&o.x+o.w<p.x){o.passed=true;combo++;comboClock=105;score+=combo>=3?2:1;$('score').textContent=score;if(combo>=2){$('combo').textContent='COMBO ×'+combo;$('combo').style.opacity=1}beep(600+Math.min(combo,5)*70,.06)}if(hitRect(p.x,p.y,p.r,o.x,0,o.w,o.top)||hitRect(p.x,p.y,p.r,o.x,o.bottom,o.w,H-o.bottom)){
+ if(shieldTime>0){shieldTime=0;o.x=-100;beep(260,.16);for(let k=0;k<18;k++)bits.push({x:p.x,y:p.y,vx:(Math.random()-.5)*7,vy:(Math.random()-.5)*7,l:25})}
+ else{end();return}
+ }}
+for(let s of bossShots){s.x+=s.vx*dt;s.y+=s.vy*dt;if(Math.hypot(p.x-s.x,p.y-s.y)<p.r+7){if(shieldTime>0){shieldTime=0;s.x=-999;beep(300,.12)}else{end();return}}}
+bossShots=bossShots.filter(s=>s.x>-30&&s.x<W+30&&s.y>-30&&s.y<H+30);
+for(let b of bolts){b.x+=b.vx*dt;b.life-=dt;if(boss&&Math.hypot(b.x-boss.x,b.y-boss.y)<38){b.life=0;damageBoss()}}
+bolts=bolts.filter(b=>b.life>0&&b.x<W+40);
+for(let q of coins){q.x-=speed*dt;q.spin+=.1*dt;
+ if(magnetTime>0&&Math.hypot(p.x-q.x,p.y-q.y)<150){q.y+=(p.y-q.y)*.075*dt;q.x+=(p.x-q.x)*.025*dt;}if(!q.t&&Math.hypot(p.x-q.x,p.y-q.y)<p.r+10){q.t=true;score+=3;runCoins++;wallet++;localStorage.neGapWallet06=wallet;$('walletHud').textContent='🪙 '+wallet+' XU';$('score').textContent=score;
+ if(runCoins>=5&&!missionDone){missionDone=true;wallet+=10;localStorage.neGapWallet06=wallet;$('walletHud').textContent='🪙 '+wallet+' XU';beep(1200,.2)}
+ updateMissionHud();beep(950,.1);for(let i=0;i<12;i++)bits.push({x:q.x,y:q.y,vx:(Math.random()-.5)*6,vy:(Math.random()-.5)*6,l:26})}}for(let q of powerups){q.x-=speed*dt;if(!q.taken&&Math.hypot(p.x-q.x,p.y-q.y)<p.r+13){q.taken=true;
+ if(q.type==='shield')shieldTime=480;else if(q.type==='magnet')magnetTime=480;else boostTime=360;
+ beep(q.type==='shield'?330:q.type==='magnet'?760:980,.14);
+ for(let k=0;k<16;k++)bits.push({x:q.x,y:q.y,vx:(Math.random()-.5)*6,vy:(Math.random()-.5)*6,l:26});
+ }}
+ powerups=powerups.filter(q=>q.x>-30&&!q.taken);
+ obs=obs.filter(o=>o.x+o.w>-20);coins=coins.filter(q=>q.x>-20&&!q.t);for(let b of bits){b.x+=b.vx*dt;b.y+=b.vy*dt;b.l-=dt}bits=bits.filter(b=>b.l>0)}
+function loop(t){let dt=Math.min(2,(t-last)/16.67||1);last=t;if(mode==='play'){update(dt);if(p&&Math.random()<.75)bits.push({x:p.x-13,y:p.y+4,vx:-1.2-Math.random()*1.4,vy:(Math.random()-.5)*1.8,l:13})}draw(t);requestAnimationFrame(loop)}
+panel('NÉ GẤP!','Chào mừng đến với <b>NÉ GẤP!</b> ⚡ Đồng hành cùng Bé Tia qua 3 thế giới!<br>🩷 5 mạng · 🪙 Thu thập xu · 👾 Đánh bại 3 Boss.<br>Chạm màn hình để đổi trọng lực. Chọn độ khó và bắt đầu cuộc phiêu lưu!','CHƠI NGAY',start);reset();requestAnimationFrame(loop);
+})();
+</script></body></html>
